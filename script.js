@@ -280,6 +280,11 @@ decreaseBtn.addEventListener('click', () => {
   brushSizeDisplay.textContent = brushSize;
 });
 
+function setResult(result) {
+  console.log("Result:", result)
+  resultDiv.innerHTML = `<img src="flags/${result}.png" width="160"><br><p>${result}</p>`;
+}
+
 // Drawing logic
 canvas.addEventListener('mousedown', () => drawing = true);
 canvas.addEventListener('mouseup', () => drawing = false);
@@ -325,7 +330,7 @@ matchBtn.addEventListener('click', async () => {
       bestMatch = name;
     }
   }
-  resultDiv.innerHTML = `<img src="flags/${bestMatch}.png" width="160"><br><p>${bestMatch}</p>`;
+  setResult(bestMatch)
   matchBtn.disabled = false;
   const drawingDataURL = canvas.toDataURL();
   const url = new URL(window.location.href);
@@ -359,9 +364,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const img = new Image();
     img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     img.src = drawing;
+    document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content', 'drawing');
   }
 
   if (result) {
-    resultDiv.innerHTML = `<img src="flags/${result}.png" width="160"><br><p>${result}</p>`;;
+    setResult(result);
   }
 });
