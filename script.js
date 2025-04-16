@@ -3,34 +3,15 @@ const ctx = canvas.getContext('2d');
 const resultDiv = document.getElementById('result');
 const matchBtn = document.getElementById('match-btn');
 const palette = document.getElementById('palette');
+const increaseBtn = document.getElementById('increase');
+const decreaseBtn = document.getElementById('decrease');
+const brushSizeDisplay = document.getElementById('brush-size-display');
 
 let currentColor = 'black';
+let brushSize = 16;
 let drawing = false;
 
-// Set up color palette
-palette.addEventListener('click', (e) => {
-  if (e.target.dataset.color) {
-    currentColor = e.target.dataset.color;
-  }
-});
-
-// Drawing logic
-canvas.addEventListener('mousedown', () => drawing = true);
-canvas.addEventListener('mouseup', () => drawing = false);
-canvas.addEventListener('mousemove', (e) => {
-  if (!drawing) return;
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  ctx.fillStyle = currentColor;
-  ctx.fillRect(x, y, 16, 16);
-});
-
-// Matching logic
-matchBtn.addEventListener('click', async () => {
-  const userImageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-  const flagNames = [
+const flagNames = [
     "Afghanistan",
     "Greece",
     "Panama",
@@ -278,10 +259,53 @@ matchBtn.addEventListener('click', async () => {
     "Palau",
     "Åland_Islands"
   ];
+
+brushSizeDisplay.textContent = brushSize;
+
+// Set up color palette
+palette.addEventListener('click', (e) => {
+  if (e.target.dataset.color) {
+    currentColor = e.target.dataset.color;
+  }
+});
+
+// Brush size controls
+increaseBtn.addEventListener('click', () => {
+  brushSize = Math.min(brushSize + 2, 50);
+  brushSizeDisplay.textContent = brushSize;
+});
+
+decreaseBtn.addEventListener('click', () => {
+  brushSize = Math.max(1, brushSize - 2);
+  brushSizeDisplay.textContent = brushSize;
+});
+
+// Drawing logic
+canvas.addEventListener('mousedown', () => drawing = true);
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseout', () => drawing = false);
+canvas.addEventListener('mousemove', (e) => {
+  if (!drawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.fillStyle = currentColor;
+  ctx.beginPath();
+  ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+  ctx.fill();
+});
+
+// Matching logic
+matchBtn.addEventListener('click', async () => {
+  matchBtn.disabled = true;
+  const userImageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
   let bestMatch = '';
   let bestScore = Infinity;
-
-  for (let name of flagNames) {
+  
+  const searchProgressBar = document.getElementById('searchProgressBar');
+  searchProgressBar.setAttribute("max", flagNames.length);
+  for (const [index, name] of flagNames.entries()) {
+    searchProgressBar.setAttribute("value", index);
     const flag = await loadImage(`flags/${name}.png`);
     const offscreen = new OffscreenCanvas(canvas.width, canvas.height);
     const offCtx = offscreen.getContext('2d');
@@ -291,9 +315,9 @@ matchBtn.addEventListener('click', async () => {
     let diff = 0;
     for (let i = 0; i < userImageData.length; i += 4) {
       const dr = userImageData[i] - flagData[i];
-      const dg = userImageData[i+1] - flagData[i+1];
-      const db = userImageData[i+2] - flagData[i+2];
-      diff += dr*dr + dg*dg + db*db;
+      const dg = userImageData[i + 1] - flagData[i + 1];
+      const db = userImageData[i + 2] - flagData[i + 2];
+      diff += dr * dr + dg * dg + db * db;
     }
 
     if (diff < bestScore) {
@@ -301,8 +325,8 @@ matchBtn.addEventListener('click', async () => {
       bestMatch = name;
     }
   }
-
-  resultDiv.innerHTML = `<img src="flags/${bestMatch}.png" width="160">`;
+  resultDiv.innerHTML = `<img src="flags/${bestMatch}.png" width="160"><br><p>${bestMatch}</p>`;
+  matchBtn.disabled = false;
 });
 
 // Helper to load image as HTMLImageElement
@@ -314,3 +338,9 @@ function loadImage(src) {
     img.src = src;
   });
 }
+
+const clearBtn = document.getElementById('clear-btn');
+
+clearBtn.addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});

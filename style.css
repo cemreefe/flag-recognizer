@@ -21,6 +21,20 @@ body {
   #palette button[data-color="white"] { background: white; }
   #palette button[data-color="black"] { background: black; }
   #palette button[data-color="yellow"] { background: yellow; }
+  #palette button[data-color="green"] { background: green; }
+  #palette button[data-color="orange"] { background: orange; }
+  
+  #brush-controls {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  #brush-controls button {
+    font-size: 18px;
+    margin: 0 5px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
   
   canvas {
     border: 1px solid #333;

@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎨 Draw a Flag</h1>
+  <h1>Flag Recognizer</h1>
 
   <div id="palette">
     <button data-color="red"></button>
@@ -14,10 +14,23 @@
     <button data-color="white"></button>
     <button data-color="black"></button>
     <button data-color="yellow"></button>
+    <button data-color="green"></button>
+    <button data-color="orange"></button>
+  </div>
+
+  <div id="brush-controls">
+    <button id="decrease">➖</button>
+    <span>Brush Size: <span id="brush-size-display">4</span></span>
+    <button id="increase">➕</button>
   </div>
 
   <canvas id="draw-area" width="160" height="100"></canvas>
+  <br>
   <button id="match-btn">🔍 Match Flag</button>
+  <button id="clear-btn">🧹 Clear Canvas</button>
+  <br>
+  <progress class="progressBar" id="searchProgressBar" max="100" value="0"></progress>
+
 
   <h2>Closest Match:</h2>
   <div id="result"></div>
