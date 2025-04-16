@@ -327,6 +327,11 @@ matchBtn.addEventListener('click', async () => {
   }
   resultDiv.innerHTML = `<img src="flags/${bestMatch}.png" width="160"><br><p>${bestMatch}</p>`;
   matchBtn.disabled = false;
+  const drawingDataURL = canvas.toDataURL();
+  const url = new URL(window.location.href);
+  url.searchParams.set('drawing', drawingDataURL);
+  url.searchParams.set('result', bestMatch);
+  window.history.replaceState({}, '', url);
 });
 
 // Helper to load image as HTMLImageElement
@@ -343,4 +348,20 @@ const clearBtn = document.getElementById('clear-btn');
 
 clearBtn.addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const drawing = params.get('drawing');
+  const result = params.get('result');
+
+  if (drawing) {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    img.src = drawing;
+  }
+
+  if (result) {
+    resultDiv.innerHTML = `<img src="flags/${result}.png" width="160"><br><p>${result}</p>`;;
+  }
 });
