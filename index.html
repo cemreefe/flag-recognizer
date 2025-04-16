@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flag Recognizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🎨 Draw a Flag</h1>
+
+  <div id="palette">
+    <button data-color="red"></button>
+    <button data-color="blue"></button>
+    <button data-color="white"></button>
+    <button data-color="black"></button>
+    <button data-color="yellow"></button>
+  </div>
+
+  <canvas id="draw-area" width="160" height="100"></canvas>
+  <button id="match-btn">🔍 Match Flag</button>
+
+  <h2>Closest Match:</h2>
+  <div id="result"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

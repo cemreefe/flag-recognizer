@@ -1,0 +1,30 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  #palette {
+    margin-bottom: 10px;
+  }
+  
+  #palette button {
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    border: 2px solid #000;
+    cursor: pointer;
+  }
+  
+  #palette button[data-color="red"] { background: red; }
+  #palette button[data-color="blue"] { background: blue; }
+  #palette button[data-color="white"] { background: white; }
+  #palette button[data-color="black"] { background: black; }
+  #palette button[data-color="yellow"] { background: yellow; }
+  
+  canvas {
+    border: 1px solid #333;
+    cursor: crosshair;
+    background: white;
+  }
+  
