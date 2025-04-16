@@ -300,6 +300,16 @@ canvas.addEventListener('mousemove', (e) => {
   ctx.fill();
 });
 
+function getCompressedPNG(originalCanvas, targetWidth = 80, targetHeight = 50) {
+  const offscreen = document.createElement('canvas');
+  offscreen.width = targetWidth;
+  offscreen.height = targetHeight;
+  const ctx = offscreen.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(originalCanvas, 0, 0, targetWidth, targetHeight);
+  return offscreen.toDataURL('image/png');
+}
+
 // Matching logic
 matchBtn.addEventListener('click', async () => {
   matchBtn.disabled = true;
@@ -329,7 +339,8 @@ matchBtn.addEventListener('click', async () => {
   }
   setResult(bestMatch)
   matchBtn.disabled = false;
-  const drawingDataURL = canvas.toDataURL();
+  // const drawingDataURL = canvas.toDataURL(); 
+  const drawingDataURL = getCompressedPNG(canvas, canvas.width/2, canvas.height/2);
   const url = new URL(window.location.href);
   url.searchParams.set('drawing', drawingDataURL);
   url.searchParams.set('result', bestMatch);
