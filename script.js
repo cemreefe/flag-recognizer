@@ -361,7 +361,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const img = new Image();
     img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     img.src = drawing;
-    document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content', 'drawing');
+    document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content', drawing);
   }
 
   if (result) {
