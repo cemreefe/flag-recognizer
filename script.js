@@ -6,6 +6,7 @@ const palette = document.getElementById('palette');
 const increaseBtn = document.getElementById('increase');
 const decreaseBtn = document.getElementById('decrease');
 const brushSizeDisplay = document.getElementById('brush-size-display');
+const flagImages = {};
 
 let currentColor = 'black';
 let brushSize = 16;
@@ -281,7 +282,6 @@ decreaseBtn.addEventListener('click', () => {
 });
 
 function setResult(result) {
-  console.log("Result:", result)
   resultDiv.innerHTML = `<img src="flags/${result}.png" width="160"><br><p>${result}</p>`;
 }
 
@@ -307,11 +307,8 @@ matchBtn.addEventListener('click', async () => {
   let bestMatch = '';
   let bestScore = Infinity;
   
-  const searchProgressBar = document.getElementById('searchProgressBar');
-  searchProgressBar.setAttribute("max", flagNames.length);
-  for (const [index, name] of flagNames.entries()) {
-    searchProgressBar.setAttribute("value", index);
-    const flag = await loadImage(`flags/${name}.png`);
+  for (let flagName in flagImages) {
+    let flag = flagImages[flagName];
     const offscreen = new OffscreenCanvas(canvas.width, canvas.height);
     const offCtx = offscreen.getContext('2d');
     offCtx.drawImage(flag, 0, 0, canvas.width, canvas.height);
@@ -327,7 +324,7 @@ matchBtn.addEventListener('click', async () => {
 
     if (diff < bestScore) {
       bestScore = diff;
-      bestMatch = name;
+      bestMatch = flagName;
     }
   }
   setResult(bestMatch)
@@ -369,5 +366,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (result) {
     setResult(result);
+  }
+});
+
+window.addEventListener('DOMContentLoaded', async () => {
+  for (const [index, name] of flagNames.entries()) {
+    searchProgressBar.setAttribute("value", index);
+    const flag = await loadImage(`flags/${name}.png`);
+    flagImages[name] = flag;
   }
 });
