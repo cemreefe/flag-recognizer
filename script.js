@@ -7,6 +7,7 @@ const increaseBtn = document.getElementById('increase');
 const decreaseBtn = document.getElementById('decrease');
 const brushSizeDisplay = document.getElementById('brush-size-display');
 const flagImages = {};
+const flagBounds = {};
 
 let currentColor = 'black';
 let brushSize = 16;
@@ -330,7 +331,8 @@ matchBtn.addEventListener('click', async () => {
     const offscreen = new OffscreenCanvas(canvas.width, canvas.height);
     const offCtx = offscreen.getContext('2d');
     fillWhite(offCtx, canvas.width, canvas.height);
-    offCtx.drawImage(flag, 0, 0, canvas.width, canvas.height);
+    const b = flagBounds[flagName];
+    offCtx.drawImage(flag, b.x, b.y, b.w, b.h, 0, 0, canvas.width, canvas.height);
     const flagData = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
 
     let diff = 0;
@@ -355,6 +357,27 @@ matchBtn.addEventListener('click', async () => {
   url.searchParams.set('result', bestMatch);
   window.history.replaceState({}, '', url);
 });
+
+// Flag PNGs have transparent padding; match against the opaque flag area only.
+function opaqueBounds(img) {
+  const c = new OffscreenCanvas(img.naturalWidth, img.naturalHeight);
+  const cctx = c.getContext('2d');
+  cctx.drawImage(img, 0, 0);
+  const { data, width, height } = cctx.getImageData(0, 0, c.width, c.height);
+  let minX = width, minY = height, maxX = -1, maxY = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 128) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return { x: 0, y: 0, w: width, h: height };
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
 
 // Helper to load image as HTMLImageElement
 function loadImage(src) {
@@ -396,6 +419,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   for (const [index, name] of flagNames.entries()) {
     searchProgressBar.setAttribute("value", index);
     const flag = await loadImage(`flags/${name}.png`);
+    flagBounds[name] = opaqueBounds(flag);
     flagImages[name] = flag;
   }
 });
