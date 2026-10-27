@@ -263,6 +263,13 @@ const flagNames = [
 
 brushSizeDisplay.textContent = brushSize;
 
+function fillWhite(context, width, height) {
+  context.fillStyle = 'white';
+  context.fillRect(0, 0, width, height);
+}
+
+fillWhite(ctx, canvas.width, canvas.height);
+
 // Set up color palette
 palette.addEventListener('click', (e) => {
   if (e.target.dataset.color) {
@@ -305,6 +312,7 @@ function getCompressedPNG(originalCanvas, targetWidth = 80, targetHeight = 50) {
   offscreen.width = targetWidth;
   offscreen.height = targetHeight;
   const ctx = offscreen.getContext('2d');
+  fillWhite(ctx, targetWidth, targetHeight);
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(originalCanvas, 0, 0, targetWidth, targetHeight);
   return offscreen.toDataURL('image/png');
@@ -321,6 +329,7 @@ matchBtn.addEventListener('click', async () => {
     let flag = flagImages[flagName];
     const offscreen = new OffscreenCanvas(canvas.width, canvas.height);
     const offCtx = offscreen.getContext('2d');
+    fillWhite(offCtx, canvas.width, canvas.height);
     offCtx.drawImage(flag, 0, 0, canvas.width, canvas.height);
     const flagData = offCtx.getImageData(0, 0, canvas.width, canvas.height).data;
 
@@ -360,7 +369,7 @@ function loadImage(src) {
 const clearBtn = document.getElementById('clear-btn');
 
 clearBtn.addEventListener('click', () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  fillWhite(ctx, canvas.width, canvas.height);
 });
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -370,7 +379,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (drawing) {
     const img = new Image();
-    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    img.onload = () => {
+      fillWhite(ctx, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
     img.src = drawing;
     document.querySelectorAll('meta[property=og\\:image]')[0].setAttribute('content', drawing);
   }
